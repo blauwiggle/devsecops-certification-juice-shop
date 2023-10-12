@@ -1,1 +1,32 @@
+variables:
+  IMAGE_NAME: 130219922021/demo-app
+  IMAGE_TAG: my-fist-app
 
+stages:
+  - test
+  - build
+#  - deploy
+
+create_cache:
+
+
+yarn_test:
+  - image: node:18-bullseyes
+  - stage: test
+  script:
+    - yarn install
+    - yarn test
+
+build_image:
+  stage: build
+  image: docker:24
+  service:
+    - docker:24-dind
+  variables:
+    DOCKER_PASS: Franck2019$
+    DOCKER_USER: arnaudfranckt4@gmail.com
+  before_script:
+  - echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+  script:
+    - docker build -t $IMAGE_NAME_TAG .
+    - docker push $IMAGE_TAG
