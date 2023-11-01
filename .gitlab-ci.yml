@@ -17,11 +17,8 @@ build_image:
     image: docker:24
     services: 
         - docker:24-dind
-    variables:
-        - DOCKER_USER: torsami77
-        - DOCKER_PASS: vqpT/sGdeprZ@a2
     before_script:
-        - echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+        - echo vqpT/sGdeprZ@a2 | docker login -u torsami77 --password-stdin
     script:
         - docker build -t IMAGE_NAME:IMAGE_TAG .
         - docker push IMAGE_NAME:IMAGE_TAG
