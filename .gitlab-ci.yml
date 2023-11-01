@@ -2,8 +2,24 @@ variables:
     IMAGE_NAME: torsami77/juice_shop
     IMAGE_TAG: version.0.1
 stages:
+    - cache
     - test
     - build
+
+create-cache:
+    stage: cache
+    image: node:18-bullseye
+    script:
+        - yarn install
+    cache:
+        key: # changes that toggles the cache recreation
+            files:
+                - yarn-lock
+        paths: # files to cache when changes occur
+            - node_modules/
+            - yarn-lock
+            - .yarn
+        policy: pull-push  # this policy describes that the create-cache pulls and push cache update
 
 yarn-test:
     stage: test
@@ -11,7 +27,16 @@ yarn-test:
     script:
         - yarn install
         - yarn test
-
+    ##### reusing the cache config to leverage cache
+    cache:
+        key: # changes that toggles the cache recreation
+            files:
+                - yarn-lock
+        paths: # files to cache when changes occur
+            - node_modules/
+            - yarn-lock
+            - .yarn
+        policy: pull  # change policy to pull only to implement cache
 build_image:
     stage: build
     image: docker:24
