@@ -1,0 +1,27 @@
+variables:
+    IMAGE_NAME: torsami77/juice_shop
+    IMAGE_TAG: version.0.1
+stages:
+    - test
+    - build
+
+yarn-test:
+    stage: test
+    image: node:18-bullseye
+    script:
+        - yarn install
+        - yarn test
+
+build_image:
+    stage: build
+    image: docker:24
+    services: 
+        - docker:24-dind
+    variables:
+        - DOCKER_USER: torsami77
+        - DOCKER_PASS: vqpT/sGdeprZ@a2
+    before_script:
+        - echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+    script:
+        - docker build -t IMAGE_NAME:IMAGE_TAG .
+        - docker push IMAGE_NAME:IMAGE_TAG
