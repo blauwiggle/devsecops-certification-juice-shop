@@ -37,13 +37,24 @@ yarn-test:
             - yarn-lock
             - .yarn
         policy: pull  # change policy to pull only to implement cache
+
+git_leaks:
+    stage: test
+    image:
+        name: zricethezav/gitleaks
+        entrypoint: [""]
+    script:
+        - gitleaks detect --verbose --source .
+    allow_failure: true
+
+
 build_image:
     stage: build
     image: docker:24
     services: 
         - docker:24-dind
     before_script:
-        - echo vqpT/sGdeprZ@a2 | docker login -u torsami77 --password-stdin
+        - echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin # variables are gotten from jenkins variable settings
     script:
         - docker build -t $IMAGE_NAME:$IMAGE_TAG .
         - docker push $IMAGE_NAME:$IMAGE_TAG
