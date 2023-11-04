@@ -47,6 +47,23 @@ git_leaks:
         - gitleaks detect --verbose --source .
     allow_failure: true
 
+njssacn:
+    stage: test
+    image: python
+    before_script: 
+        - pip3 install --upgrade njsscan
+    script:
+        - njsscan --exit-warning .
+    allow_failure: true
+
+semgrep:
+    stage: test
+    image: returntocorp/semgrep
+    variables:
+        SEMGREP_RULES: $SEMGREP_RULES
+    script: 
+        - semgrep ci
+    allow_failure: true
 
 build_image:
     stage: build
