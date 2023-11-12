@@ -77,16 +77,41 @@ semgrep:
         paths:
             - semgrep.json
 
+retire:
+    stage: test
+    image: node:18-bullseye
+    ##### reusing the cache config to leverage cache
+    cache:
+        key: # changes that toggles the cache recreation
+            files:
+                - yarn-lock
+        paths: # files to cache when changes occur
+            - node_modules/
+            - yarn-lock
+            - .yarn
+        policy: pull  # change policy to pull only to implement cache
+    before_script:
+        - npm install -g retire
+    script:
+        - retire --path . --outputformat json --outputpath retire.json
+    allow_failure: true
+    artifacts:
+        when: always
+        paths:
+            - retire.json
+
+
 upload_reports:
     stage: test
     image: python
-    needs: ['git_leaks', 'njsscan', 'semgrep']
+    needs: ['git_leaks', 'njsscan', 'semgrep', 'retire']
     before_script:
         - pip3 install requests
     script:
         - python3 upload-reports.py gitleaks.json
         - python3 upload-reports.py njsscan.sarif
         - python3 upload-reports.py semgrep.json
+        - python3 upload-reports.py retire.json
 
 build_image:
     stage: build
