@@ -124,7 +124,7 @@ build_image:
     services: 
         - docker:24-dind
     before_script:
-        - apt-get install --no-cache python3 py3-pip
+        - apk --no-cache add python3 py3-pip
         - pip3 install --n0-cache-dir awscli
         - aws ecr get-login-password | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
     script:
