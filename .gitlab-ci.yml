@@ -1,6 +1,11 @@
 variables:
-    IMAGE_NAME: torsami77/juice_shop
-    IMAGE_TAG: version.0.1
+    IMAGE_NAME:  $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/juice-shop
+    IMAGE_TAG: $CI_COMMIT_SHA
+    IMAGE_REPO: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/juice-shop:$CI_COMMIT_SHA
+    AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+    AWS_ACCOUNT_ID: $AWS_ACCOUNT_ID
+    AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+    AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
 stages:
     - cache
     - test
@@ -101,17 +106,17 @@ retire:
             - retire.json
 
 
-upload_reports:
-    stage: test
-    image: python
-    needs: ['git_leaks', 'njsscan', 'semgrep', 'retire']
-    before_script:
-        - pip3 install requests
-    script:
-        - python3 upload-reports.py gitleaks.json
-        - python3 upload-reports.py njsscan.sarif
-        - python3 upload-reports.py semgrep.json
-        - python3 upload-reports.py retire.json
+# upload_reports:
+#     stage: test
+#     image: python
+#     needs: ['git_leaks', 'njsscan', 'semgrep', 'retire']
+#     before_script:
+#         - pip3 install requests
+#     script:
+#         - python3 upload-reports.py gitleaks.json
+#         - python3 upload-reports.py njsscan.sarif
+#         - python3 upload-reports.py semgrep.json
+#         - python3 upload-reports.py retire.json
 
 build_image:
     stage: build
@@ -119,7 +124,9 @@ build_image:
     services: 
         - docker:24-dind
     before_script:
-        - echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin # variables are gotten from jenkins variable settings
+        - apt-get install --no-cache python3 py3-pip
+        - pip3 install --n0-cache-dir awscli
+        - aws ecr get-login-password | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
     script:
         - docker build -t $IMAGE_NAME:$IMAGE_TAG .
         - docker push $IMAGE_NAME:$IMAGE_TAG
