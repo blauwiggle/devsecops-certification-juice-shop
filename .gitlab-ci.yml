@@ -126,7 +126,7 @@ build_image:
     before_script:
         - apk --no-cache add python3 py3-pip
         - pip3 install --no-cache-dir awscli
-        - aws ecr get-login-password | docker login --username AWS --password-stdin 340090223547.dkr.ecr.us-east-1.amazonaws.com/juice-shop
+        - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 340090223547.dkr.ecr.us-east-1.amazonaws.com/juice-shop
     script:
         - docker build -t $IMAGE_NAME:$IMAGE_TAG .
         - docker push $IMAGE_NAME:$IMAGE_TAG
