@@ -1,11 +1,12 @@
 variables:
-    IMAGE_NAME:  $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/juice-shop
-    IMAGE_TAG: $CI_COMMIT_SHA
-    IMAGE_REPO: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/juice-shop:$CI_COMMIT_SHA
     AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
     AWS_ACCOUNT_ID: $AWS_ACCOUNT_ID
     AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
     AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+    IMAGE_NAME:  $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/juice-shop
+    IMAGE_TAG: $CI_COMMIT_SHA
+    IMAGE_REPO: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/juice-shop:$CI_COMMIT_SHA
+
 stages:
     - cache
     - test
@@ -126,7 +127,7 @@ build_image:
     before_script:
         - apk --no-cache add python3 py3-pip
         - pip3 install --no-cache-dir awscli
-        - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 340090223547.dkr.ecr.us-east-1.amazonaws.com/juice-shop
+        - aws ecr get-login-password --region | docker login --username AWS --password-stdin IMAGE_NAME
     script:
         - docker build -t $IMAGE_NAME:$IMAGE_TAG .
         - docker push $IMAGE_NAME:$IMAGE_TAG
