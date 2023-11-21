@@ -3,9 +3,9 @@ variables:
     AWS_ACCOUNT_ID: $AWS_ACCOUNT_ID
     AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
     AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
-    IMAGE_NAME: 340090223547.dkr.ecr.us-east-1.amazonaws.com/juice-shop
+    IMAGE_NAME: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/juice-shop
     IMAGE_TAG: $CI_COMMIT_SHA
-    IMAGE_REPO: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/juice-shop:$CI_COMMIT_SHA
+    IMAGE_REPO: $IMAGE_NAME:$CI_COMMIT_SHA
 
 stages:
     - cache
