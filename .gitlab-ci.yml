@@ -1,0 +1,133 @@
+variables:
+    AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+    AWS_ACCOUNT_ID: $AWS_ACCOUNT_ID
+    AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+    AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+    IMAGE_NAME: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/juice-shop
+    IMAGE_TAG: $CI_COMMIT_SHA
+    IMAGE_REPO: $IMAGE_NAME:$CI_COMMIT_SHA
+
+stages:
+    - cache
+    - test
+    - build
+
+create-cache:
+    stage: cache
+    image: node:18-bullseye
+    script:
+        - yarn install
+    cache:
+        key: # changes that toggles the cache recreation
+            files:
+                - yarn-lock
+        paths: # files to cache when changes occur
+            - node_modules/
+            - yarn-lock
+            - .yarn
+        policy: pull-push  # this policy describes that the create-cache pulls and push cache update
+
+yarn-test:
+    stage: test
+    image: node:18-bullseye
+    script:
+        - yarn install
+        - yarn test
+    ##### reusing the cache config to leverage cache
+    cache:
+        key: # changes that toggles the cache recreation
+            files:
+                - yarn-lock
+        paths: # files to cache when changes occur
+            - node_modules/
+            - yarn-lock
+            - .yarn
+        policy: pull  # change policy to pull only to implement cache
+
+git_leaks:
+    stage: test
+    image:
+        name: zricethezav/gitleaks
+        entrypoint: [""]
+    script:
+        - gitleaks detect --verbose --source . -f json -r gitleaks.json
+    allow_failure: true
+    artifacts:
+        when: always
+        paths:
+            - gitleaks.json
+
+njsscan:
+    stage: test
+    image: python
+    before_script: 
+        - pip3 install --upgrade njsscan
+    script:
+        - njsscan --exit-warning . --sarif -o njsscan.sarif
+    allow_failure: true
+    artifacts:
+        when: always
+        paths:
+            - njsscan.sarif
+
+semgrep:
+    stage: test
+    image: returntocorp/semgrep
+    variables:
+        SEMGREP_RULES: $SEMGREP_RULES
+    script: 
+        - semgrep ci --json --output semgrep.json
+    allow_failure: true
+    artifacts:
+        when: always
+        paths:
+            - semgrep.json
+
+retire:
+    stage: test
+    image: node:18-bullseye
+    ##### reusing the cache config to leverage cache
+    cache:
+        key: # changes that toggles the cache recreation
+            files:
+                - yarn-lock
+        paths: # files to cache when changes occur
+            - node_modules/
+            - yarn-lock
+            - .yarn
+        policy: pull  # change policy to pull only to implement cache
+    before_script:
+        - npm install -g retire
+    script:
+        - retire --path . --outputformat json --outputpath retire.json
+    allow_failure: true
+    artifacts:
+        when: always
+        paths:
+            - retire.json
+
+
+# upload_reports:
+#     stage: test
+#     image: python
+#     needs: ['git_leaks', 'njsscan', 'semgrep', 'retire']
+#     before_script:
+#         - pip3 install requests
+#     script:
+#         - python3 upload-reports.py gitleaks.json
+#         - python3 upload-reports.py njsscan.sarif
+#         - python3 upload-reports.py semgrep.json
+#         - python3 upload-reports.py retire.json
+
+build_image:
+    stage: build
+    image: docker:24
+    services: 
+        - docker:24-dind
+    before_script:
+        - apk --no-cache add python3 py3-pip
+        - pip3 install --no-cache-dir awscli
+        - aws ecr get-login-password | docker login --username AWS --password-stdin $IMAGE_NAME
+    script:
+        - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+        - docker push $IMAGE_NAME:$IMAGE_TAG
