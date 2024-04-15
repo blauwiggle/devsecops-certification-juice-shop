@@ -20,7 +20,16 @@ create-cache:
       - node_modules/
       - yarn.lock
       - .yarn
-    policy: pull-push        
+    policy: pull
+
+gitleaks:
+   stage: test
+   image:
+     name: zricethezav/gitleaks
+     entrypoint: [""]
+   script:
+     - gitleaks detect --verbose --source .
+   allow_failure: true  
 
 yarn_test:
   stage: test
