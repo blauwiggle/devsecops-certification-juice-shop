@@ -19,10 +19,11 @@ build_image:
   services:
     - docker:24-dind
   variables:
-    DOCKER_PASS: 1qaz2wsx!QAZ@WSX
+    DOCKER_PASS: 1qaz2wsx!QAZ@WSXdocker
     DOCKER_USER: devsecjs
   before_script:
     - echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
   script:
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
     - docker push $IMAGE_NAME:$IMAGE_TAG
+
