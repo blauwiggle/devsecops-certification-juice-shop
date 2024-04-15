@@ -1,13 +1,14 @@
-variable:
-    IMAGE_NAME: devsecjs/devescops
-    IMAGE_TAG: juice-shop-1.1
+variables:
+  IMAGE_NAME: devsecjs/devescops
+  IMAGE_TAG: juice-shop-1.1
+
 stages:
   - test
   - build
 
 yarn_test:
-  image:  node:18-bullseye
   stage: test
+  image: node:18-bullseye
   script:
     - yarn install
     - yarn test
@@ -17,12 +18,11 @@ build_image:
   image: docker:24
   services:
     - docker:24-dind
-  variable:
+  variables:
     DOCKER_PASS: 1qaz2wsx!QAZ@WSX
     DOCKER_USER: devsecjs
   before_script:
     - echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-
   script:
-    - docker build -t devsecjs/devescops:$IMAGE_TAG .
-    - docker push devsecjs/devescops:$IMAGE_TAG
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+    - docker push $IMAGE_NAME:$IMAGE_TAG
