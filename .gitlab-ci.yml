@@ -14,7 +14,7 @@ build_image:
     stage: build
     image: docker:24
     services:
-        -docker:24-dind
+      - docker:24-dind
     variables:
       DOCKER_PASS: sevgidogan
       DOCKER_USER: dckr_pat_eHXX8WF4dnvDcOCXtEHbr4unYTI
