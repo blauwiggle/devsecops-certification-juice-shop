@@ -1,13 +1,13 @@
 variables:
   IMAGE_NAME: sevgidogan/docker101tutorial
-  IMAGE_TAG: juice-shop-1.0
+  IMAGE_TAG: juice-shop-1.1
 
 stages:
   - test
   - build
 
 yarn_test:
-  image: node:18-bulleye
+  image: node:18-bullseye
   stage: test
   script:
     - yarn install
