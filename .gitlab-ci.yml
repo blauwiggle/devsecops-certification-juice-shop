@@ -1,7 +1,7 @@
 variables:
   IMAGE_NAME: spaceblocktechnology/akin
-  IMAGE_TAG:  spaceblocktechnology/akin
-      
+  IMAGE_TAG: juice-shop-1.1
+
 stages:
   - test
   - build
@@ -10,8 +10,8 @@ yarn_test:
   image: node:18-bullseye
   stage: test
   script:
-     - yarn install
-     - yarn test
+    - yarn install
+    - yarn test
 
 build_image:
   stage: build
@@ -24,4 +24,6 @@ build_image:
   before_script:
     - echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
   script:
-    - docker build -t $IMAGE_NAME:$IMAGE_TAG 
+    - docker buildx create --use
+    - docker buildx inspect --bootstrap
+    - docker buildx build -t $IMAGE_NAME:$IMAGE_TAG .
