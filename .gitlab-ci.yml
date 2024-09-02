@@ -1,4 +1,4 @@
-varisbles:
+variables:
     IMAGE_NAME: dpkprshr450/juice-shop
     IMAGE_TAG: juice-shop-1.1
 stage:
