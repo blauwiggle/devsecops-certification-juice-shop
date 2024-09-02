@@ -1,0 +1,28 @@
+varisbles:
+    IMAGE_NAME: dpkprshr450/juice-shop
+    IMAGE_TAG: juice-shop-1.1
+stage:
+    - test
+    - build
+
+yarn_test:
+    image: node:18-bulleye
+    stage: test
+    script: 
+        - yarn install
+        - yarn test
+
+build_image:
+    stage: build
+    image: docker:24
+    services:
+        - docker:24-dind
+    variable:
+        DOCKER_PASS: dp9813935516
+        DOCKER_USER: dpkprshr450
+    before_Script:
+        - echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+    script:
+        - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+        - docker push $IAMGE_NAME:$IMAGE:TAG
+
