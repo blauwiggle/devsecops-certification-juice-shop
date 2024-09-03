@@ -22,6 +22,17 @@ create_cache:
       - .yarn
     policy: pull-push
 
+gitleaks:
+  stage: test
+  image:
+    name: zricethezav/gitleaks
+    entrypoint:  [""]
+  script:
+    - gitleaks detect --verbose --source .
+
+
+
+
 yarn_test:
   image: node:18-bullseye
   stage: test
