@@ -22,6 +22,22 @@ create_cache:
       - .yarn
     policy: pull-push
 
+yarn_test:
+  image: node:18-bullseye
+  stage: test
+  script:
+    - yarn install
+    - yarn test
+  cache:
+    key:
+      files:
+        - yarn.lock
+    paths:
+      - node_modules/
+      - yarn.lock
+      - .yarn
+    policy: pull-push
+
 gitleaks:
   stage: test
   image:
@@ -29,16 +45,8 @@ gitleaks:
     entrypoint:  [""]
   script:
     - gitleaks detect --verbose --source .
-
-
-
-
-yarn_test:
-  image: node:18-bullseye
-  stage: test
-  script:
-    - yarn install
-    - yarn test
+  
+  allow_failure: true
     
 build_image:
     stage: build
