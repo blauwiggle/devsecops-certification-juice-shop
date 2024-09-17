@@ -57,7 +57,7 @@ njsscan:
   before_script:
     - pip3 install --upgrade njsscan
   script:
-    - njsscan --exit-warning . -sarif -o njsscan.sarif 
+    - njsscan --exit-warning . --sarif -o njsscan.sarif 
   allow_failure: true
   artifacts:
     when: always
