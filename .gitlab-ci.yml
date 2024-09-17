@@ -45,8 +45,16 @@ gitleaks:
     entrypoint:  [""]
   script:
     - gitleaks detect --verbose --source .
-  
   allow_failure: true
+  
+njsscan:
+  stage: test
+  image: python
+  before_script:
+    - pip3 install --upgrade njsscan
+  script:
+    - njsscan . 
+
     
 build_image:
     stage: build
@@ -62,4 +70,13 @@ build_image:
     script:
       - docker build -t $IMAGE_NAME:$IMAGE_TAG .
       - docker push $IMAGE_NAME:$IMAGE_TAG
+
+      
+
+
+
+
+
+
+
 
