@@ -53,7 +53,7 @@ njsscan:
   before_script:
     - pip3 install --upgrade njsscan
   script:
-    - njsscan . 
+    - njsscan .
 
 build_image:
     stage: build
