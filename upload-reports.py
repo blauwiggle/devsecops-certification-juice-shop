@@ -1,16 +1,16 @@
 import requests
 import sys
 
-file_name - sys.argv[1]
+file_name = sys.argv[1]
 scan_type = ''
 
 if file_name == 'gitleaks.json':
-     scan_type = 'Gitleaks Scan'
+    scan_type = 'Gitleaks Scan'
 elif file_name == 'njsscan.sarif':
      scan_type = 'SARIF'
 elif file_name == 'semgrep.json':
      scan_type = 'Semgrep JSON Report'
-     elif file_name == 'retire.json':
+elif file_name == 'retire.json':
      scan_type = 'Retire.js Scan'
 
 
