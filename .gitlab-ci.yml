@@ -77,11 +77,30 @@ semgrep:
     paths: 
       - semgrep.json
 
+retire:
+  stage: test
+  image: node:18-bullseye
+  cache:
+    key:
+      files:
+        - yarn.lock
+    paths:
+      - node_modules/
+      - yarn.lock
+      - .yarn
+    policy: pull-push
+  before_script:
+    - npm install -g retire
+  script:
+    - retire --path . --outputformat json --outputpath retire.json
+
+
+
 
 upload_reports:
   stage: test
   image: python
-  needs: ["gitleaks", "njsscan", "semgrep"]
+  needs: ["gitleaks", "njsscan", "semgrep", retire]
   when: always
   before_script:
     - pip3 install requests
@@ -89,6 +108,7 @@ upload_reports:
     - python3 upload-reports.py gitleaks.json
     - python3 upload-reports.py njsscan.sarif
     - python3 upload-reports.py semgrep.json
+    - - python3 upload-reports.py retire.json
 
   
 

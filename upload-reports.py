@@ -1,4 +1,18 @@
 import requests
+import sys
+
+file_name - sys.argv[1]
+scan_type = ''
+
+if file_name == 'gitleaks.json':
+     scan_type = 'Gitleaks Scan'
+elif file_name == 'njsscan.sarif':
+     scan_type = 'SARIF'
+elif file_name == 'semgrep.json':
+     scan_type = 'Semgrep JSON Report'
+     elif file_name == 'retire.json':
+     scan_type = 'Retire.js Scan'
+
 
 headers = {
     'Authorization': 'Token 548afd6fab3bea9794a41b31da0e9404f733e222'
