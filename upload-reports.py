@@ -39,5 +39,5 @@ if response.status_code==201:
     print('Scan results imported successfully')
 
 else: 
-     print(f' Failed to import scan results: {response.context}')
+     print(f' Failed to import scan results: {response.content}')
               
