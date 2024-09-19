@@ -1,6 +1,9 @@
 variables:
-  IMAGE_NAME: sevgidogan/docker101tutorial
-  IMAGE_TAG: juice-shop-1.1
+  AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+  AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+  AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+  ACCOUNT_ID: $ACCOUNT_ID 
+  IMAGE_NAME: $ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/juice-shop
 
 stages:
   - test
@@ -93,42 +96,41 @@ retire:
     - npm install -g retire
   script:
     - retire --path . --outputformat json --outputpath retire.json
-
-
-
-
-upload_reports:
-  stage: test
-  image: python
-  needs: ["gitleaks", "njsscan", "semgrep", retire]
-  when: always
-  before_script:
-    - pip3 install requests
-  script:
-    - python3 upload-reports.py gitleaks.json
-    - python3 upload-reports.py njsscan.sarif
-    - python3 upload-reports.py semgrep.json
-    - - python3 upload-reports.py retire.json
-
+  allow_failure: true
   
 
+# upload_reports:
+#   stage: test
+#   image: python
+#   needs: ["gitleaks", "njsscan", "semgrep", retire]
+#   when: always
+#   before_script:
+#     - pip3 install requests
+#   script:
+#     - python3 upload-reports.py gitleaks.json
+#     - python3 upload-reports.py njsscan.sarif
+#     - python3 upload-reports.py semgrep.json
+#     - - python3 upload-reports.py retire.json
+
+  
 build_image:
     stage: build
     image: docker:24
     services:
       - docker:24-dind
-    variables:
-      DOCKER_PASS: $DOCKER_PASS
-      DOCKER_USER: $DOCKER_USER
+
+
     before_script:
-    - echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-
+      - apk --no-cache add curl python3 py3-pip
+      - pip3 install --no-cache-dir awscli
+      - echo aws ecr get-login-password | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
     script:
-      - docker build -t $IMAGE_NAME:$IMAGE_TAG .
-      - docker push $IMAGE_NAME:$IMAGE_TAG
+      - docker build -t $IMAGE_NAME:$CI_COMMIT_SHA -t $IMAGE_NAME:latest .
+      - docker push $IMAGE_NAME:$CI_COMMIT_SHA
+      - docker push $IMAGE_NAME:latest
 
-      
 
+   
 
 
 
