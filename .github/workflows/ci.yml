@@ -193,10 +193,9 @@ jobs:
 
       - name: Install AWS CLI
         run: |
-          python3 -m venv /path/to/venv
-          . /path/to/venv/bin/activate
-          apk --no-cache add curl python3 py3-pip
-          pip3 install --no-cache-dir awscli
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
 
       - name: Login to AWS ECR
         run: |
