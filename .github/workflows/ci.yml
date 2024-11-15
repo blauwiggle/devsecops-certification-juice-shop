@@ -212,13 +212,15 @@ jobs:
     runs-on: ubuntu-latest
     needs: build_image
     steps:
-      - name: Install SSH client
-        run: |
-          apt-get update && apt-get install -y openssh-client
+      # - name: Install SSH client
+      #   run: |
+      #     apt update -y && apt install -y openssh-client
+
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
       - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_IP }} "docker pull $IMAGE_NAME:latest"
