@@ -181,8 +181,8 @@ jobs:
 
   build_image:
     runs-on: ubuntu-latest
-    container:
-      image: docker:24
+    # container:
+      # image: docker:24
     # needs: yarn_test
     steps:
       - name: Checkout code
