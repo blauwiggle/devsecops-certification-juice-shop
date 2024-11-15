@@ -122,6 +122,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Download gitleaks report
+        uses: actions/download-artifact@v3
+        with:
+          name: gitleaks-report
+  
+      - name: Download njsscan report
+        uses: actions/download-artifact@v3
+        with:
+          name: njsscan-report
+  
+      - name: Download semgrep report
+        uses: actions/download-artifact@v3
+        with:
+          name: semgrep-report
+
       - name: Install requests
         run: pip3 install requests
 
@@ -130,7 +145,7 @@ jobs:
 
       - name: Upload njsscan report
         run: python3 upload-reports.py njsscan.sarif
-        
+
       - name: Upload semgrep report
         run: python3 upload-reports.py semgrep.json
 
