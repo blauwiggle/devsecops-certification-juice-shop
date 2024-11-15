@@ -10,6 +10,8 @@ elif file_name == 'njsscan.serif':
     scan_type = 'SARIF'
 elif file_name == 'semgrep.json':
     scan_type = 'Semgrep JSON Report'
+elif file_name == 'retire.json':
+    scan_type = 'Retire.js Scan'
 
 headers = {
     'Authorization': 'Token 0999704965ee8fe519d46909c38327e6c4022997'
